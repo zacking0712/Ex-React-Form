@@ -2,6 +2,7 @@ import React from "react";
 import { Space, Table, Tag } from "antd";
 
 const TableUser = ({ arrData }) => {
+  console.log(arrData);
   const columns = [
     {
       title: "STT",

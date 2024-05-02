@@ -3,7 +3,7 @@ import Input from "../../components/Input/Input";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
-const Form = ({ setArrUser }) => {
+const Form = ({ setUser, arrData }) => {
   const { handleBlur, handleChange, handleSubmit, touched, errors, values } =
     useFormik({
       initialValues: {
@@ -13,8 +13,7 @@ const Form = ({ setArrUser }) => {
         email: "",
       },
       onSubmit: (values) => {
-        // console.log(values);
-        setArrUser(values);
+        setUser(values);
       },
 
       validationSchema: Yup.object({
