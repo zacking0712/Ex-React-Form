@@ -1,43 +1,91 @@
+import { useEffect } from "react";
 import React from "react";
 import Input from "../../components/Input/Input";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { getItemLocal, setItemLocal } from "../../services/storage";
 
-const Form = ({ setUser, arrData }) => {
-  const { handleBlur, handleChange, handleSubmit, touched, errors, values } =
-    useFormik({
-      initialValues: {
-        maSV: "",
-        hoTen: "",
-        soDT: "",
-        email: "",
-      },
-      onSubmit: (values) => {
-        setUser(values);
-      },
+const Form = ({ setUser, update, arrData, setArrData }) => {
+  // console.log(update);
+  const {
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    touched,
+    errors,
+    values,
+    setValues,
+    setTouched,
+    isValid,
+    resetForm,
+  } = useFormik({
+    initialValues: {
+      maSV: "",
+      hoTen: "",
+      soDT: "",
+      email: "",
+    },
+    onSubmit: (values, { resetForm }) => {
+      // console.log(values);
+      setUser(values);
+      resetForm();
+    },
 
-      validationSchema: Yup.object({
-        maSV: Yup.string().required("Vui lòng không để trống"),
-        hoTen: Yup.string()
-          .required("Vui lòng không để trống")
-          .matches(
-            /^[a-zA-Z\s'\-ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯưẠạẢảẤấẦầẨẩẪẫẬậẮắẰằẲẳẴẵẶặẸẹẺẻẼẽẾếỀềỂểỄễỆệỈỉỊịỌọỎỏỐốỒồỔổỖỗỘộỚớỜờỞởỠỡỢợỤụỦủỨứỪừỬửỮữỰựỲỳỴỵỶỷỸỹ]+$/g,
-            "Đây không phải chữ"
-          ),
-        soDT: Yup.string()
-          .required("Vui lòng không để trống")
-          .matches(
-            /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
-            "Đây không phải số điện thoại"
-          ),
-        email: Yup.string()
-          .required("Vui lòng không để trống")
-          .email("Vui lòng nhập đúng định dạng email"),
-      }),
-    });
+    validationSchema: Yup.object({
+      maSV: Yup.string().required("Vui lòng không để trống"),
+      hoTen: Yup.string()
+        .required("Vui lòng không để trống")
+        .matches(
+          /^[a-zA-Z\s'\-ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯưẠạẢảẤấẦầẨẩẪẫẬậẮắẰằẲẳẴẵẶặẸẹẺẻẼẽẾếỀềỂểỄễỆệỈỉỊịỌọỎỏỐốỒồỔổỖỗỘộỚớỜờỞởỠỡỢợỤụỦủỨứỪừỬửỮữỰựỲỳỴỵỶỷỸỹ]+$/g,
+          "Đây không phải chữ"
+        ),
+      soDT: Yup.string()
+        .required("Vui lòng không để trống")
+        .matches(
+          /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/,
+          "Đây không phải số điện thoại"
+        ),
+      email: Yup.string()
+        .required("Vui lòng không để trống")
+        .email("Vui lòng nhập đúng định dạng email"),
+    }),
+  });
+
+  useEffect(() => {
+    if (update) {
+      // console.log(update);
+      setValues(update);
+    }
+  }, [update]);
+
+  const handleUpdateUser = () => {
+    const newArr = [...arrData];
+    console.log(newArr);
+    const objectTouched = {};
+    for (let key in values) {
+      objectTouched[key] = true;
+    }
+    setTouched(objectTouched);
+    if (isValid) {
+      console.log(values);
+      newArr.filter((item, index) => {
+        console.log(item);
+        console.log(update);
+        if (item == update) {
+          newArr.fill(values, index, index + 1);
+          console.log(newArr);
+          setArrData(newArr);
+          setItemLocal("arrData", newArr);
+        }
+        return update;
+      });
+    }
+  };
+  // console.log(arrData);
+
   return (
     <div>
-      <form onSubmit={handleSubmit} action="">
+      <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-2 gap-5">
           <Input
             label="Mã SV"
@@ -87,7 +135,13 @@ const Form = ({ setUser, arrData }) => {
               Thêm sinh viên
             </button>
 
-            <button type="button" className="py-2 px-5 bg-yellow-500 rounded">
+            <button
+              onClick={() => {
+                handleUpdateUser();
+              }}
+              type="button"
+              className="py-2 px-5 bg-yellow-500 rounded"
+            >
               Cập nhật
             </button>
           </div>
